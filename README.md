@@ -30,6 +30,8 @@ If you want to install `funk-svd` in a specific conda environment beware of usin
 
 
 >>> df = fetch_ml20m_ratings()
+Downloading data...
+Unzipping data...
 
 >>> train = df.sample(frac=0.8, random_state=7)
 >>> val = df.drop(train.index.tolist()).sample(frac=0.5, random_state=8)
@@ -39,12 +41,16 @@ If you want to install `funk-svd` in a specific conda environment beware of usin
 ...           n_factors=15, min_rating=1, max_rating=5)
 
 >>> svd.fit(X=train, X_val=val, early_stopping=True, shuffle=False)
+Preprocessing data...
+
+Epoch 1/...
 
 >>> pred = svd.predict(test)
 >>> mae = mean_absolute_error(test["rating"], pred)
 
 >>> print("Test MAE: {:.2f}".format(mae))
-Test MAE:  0.61
+Test MAE: 0.61
+
 ```
 
 ## Funk SVD for recommendation in a nutshell
