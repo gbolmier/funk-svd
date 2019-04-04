@@ -15,5 +15,5 @@ before_install:
 install:
   - conda install --name testenv --yes --file requirements.txt pytest
   - pip install .
-  - conda install scikit-learn
+  - conda install scikit-learn --yes
 script: pytest
