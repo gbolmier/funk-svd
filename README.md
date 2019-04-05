@@ -30,8 +30,6 @@ If you want to install `funk-svd` in a specific conda environment beware of usin
 
 
 >>> df = fetch_ml20m_ratings()
-Downloading data...
-Unzipping data...
 
 >>> train = df.sample(frac=0.8, random_state=7)
 >>> val = df.drop(train.index.tolist()).sample(frac=0.5, random_state=8)
