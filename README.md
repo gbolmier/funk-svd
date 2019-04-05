@@ -1,8 +1,8 @@
 # :zap: funk-svd [![Build Status](https://travis-ci.com/gbolmier/funk-svd.svg?branch=master)](https://travis-ci.com/gbolmier/funk-svd)
 
-`funk-svd` is a Python 3 library implementing a fast version of the famous SVD algorithm popularized by Simon Funk [(here)](http://sifter.org/simon/journal/20061211.html) during [Neflix Prize](http://en.wikipedia.org/wiki/Netflix_Prize) contest.
+`funk-svd` is a Python 3 library implementing a fast version of the famous SVD algorithm popularized by Simon Funk [(here)](http://sifter.org/simon/journal/20061211.html) during the [Neflix Prize](http://en.wikipedia.org/wiki/Netflix_Prize) contest.
 
-[`Numba`](http://numba.pydata.org/) is used to speed up our algorithm enabling us to run more than 10 times faster than [`Surprise`](http://surpriselib.com) cython implementation (cf. [benchmark notebook](benchmark.ipynb)).
+[`Numba`](http://numba.pydata.org/) is used to speed up our algorithm, enabling us to run over 10 times faster than [`Surprise`](http://surpriselib.com)'s Cython implementation (cf. [benchmark notebook](benchmark.ipynb)).
 
 | Movielens 20M | RMSE | MAE  | Time          |
 |---------------|------|------|---------------|
@@ -11,7 +11,7 @@
 
 ## Installation
 
-Run `pip install git+https://github.com/gbolmier/funk-svd` in a terminal
+Run `pip install git+https://github.com/gbolmier/funk-svd` in a terminal.
 
 If you want to install `funk-svd` in a specific conda environment beware of using the [corresponding local `pip`](https://github.com/ContinuumIO/anaconda-issues/issues/1429).
 
@@ -46,36 +46,36 @@ Preprocessing data...
 Epoch 1/...
 
 >>> pred = svd.predict(test)
->>> mae = mean_absolute_error(test["rating"], pred)
+>>> mae = mean_absolute_error(test['rating'], pred)
 
->>> print("Test MAE: {:.2f}".format(mae))
+>>> print('Test MAE: {:.2f}'.format(mae))
 Test MAE: 0.61
 
 ```
 
 ## Funk SVD for recommendation in a nutshell
 
-We have a huge sparse matrix: 
+We have a huge sparse matrix:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=R&space;=&space;\begin{pmatrix}&space;{\color{Red}&space;?}&space;&&space;2&space;&&space;\cdots&space;&&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;\\&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;&&space;\cdots&space;&&space;{\color{Red}&space;?}&space;&&space;4.5&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;3&space;&&space;{\color{Red}&space;?}&space;&&space;\cdots&space;&&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;\\&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;&&space;\cdots&space;&&space;5&space;&&space;{\color{Red}&space;?}&space;\end{pmatrix}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?R&space;=&space;\begin{pmatrix}&space;{\color{Red}&space;?}&space;&&space;2&space;&&space;\cdots&space;&&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;\\&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;&&space;\cdots&space;&&space;{\color{Red}&space;?}&space;&&space;4.5&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;3&space;&&space;{\color{Red}&space;?}&space;&&space;\cdots&space;&&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;\\&space;{\color{Red}&space;?}&space;&&space;{\color{Red}&space;?}&space;&&space;\cdots&space;&&space;5&space;&&space;{\color{Red}&space;?}&space;\end{pmatrix}" title="R = \begin{pmatrix} {\color{Red} ?} & 2 & \cdots & {\color{Red} ?} & {\color{Red} ?} \\ {\color{Red} ?} & {\color{Red} ?} & \cdots & {\color{Red} ?} & 4.5 \\ \vdots & \ddots & \ddots & \ddots & \vdots \\ 3 & {\color{Red} ?} & \cdots & {\color{Red} ?} & {\color{Red} ?} \\ {\color{Red} ?} & {\color{Red} ?} & \cdots & 5 & {\color{Red} ?} \end{pmatrix}" /></a>
 
-storing known ratings for a set of users and items: 
+storing known ratings for a set of users and items:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;u&space;=&space;1,&space;...,&space;U" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;u&space;=&space;1,&space;...,&space;U" title="u = 1, ..., U" /></a>
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\inline&space;i&space;=&space;1,&space;...,&space;I" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\inline&space;i&space;=&space;1,&space;...,&space;I" title="i = 1, ..., I" /></a>
 
-The idea is to estimate unknown ratings by factorizing it into two smaller ones representing users and items characteristics:
+The idea is to estimate unknown ratings by factorizing the rating matrix into two smaller matrices representing user and item characteristics:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=P&space;=&space;\begin{pmatrix}&space;0.37&space;&&space;\cdots&space;&&space;0.69&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;1.08&space;&&space;\cdots&space;&&space;0.24&space;\end{pmatrix}&space;,&space;Q&space;=&space;\begin{pmatrix}&space;0.09&space;&&space;\cdots&space;&&space;\cdots&space;&&space;\cdots&space;&&space;0.46&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;0.51&space;&&space;\cdots&space;&&space;\cdots&space;&&space;\cdots&space;&&space;0.72&space;\end{pmatrix}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?P&space;=&space;\begin{pmatrix}&space;0.37&space;&&space;\cdots&space;&&space;0.69&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;1.08&space;&&space;\cdots&space;&&space;0.24&space;\end{pmatrix}&space;,&space;Q&space;=&space;\begin{pmatrix}&space;0.09&space;&&space;\cdots&space;&&space;\cdots&space;&&space;\cdots&space;&&space;0.46&space;\\&space;\vdots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\ddots&space;&&space;\vdots&space;\\&space;0.51&space;&&space;\cdots&space;&&space;\cdots&space;&&space;\cdots&space;&&space;0.72&space;\end{pmatrix}" title="P = \begin{pmatrix} 0.37 & \cdots & 0.69 \\ \vdots & \ddots & \vdots \\ \vdots & \ddots & \vdots \\ \vdots & \ddots & \vdots \\ 1.08 & \cdots & 0.24 \end{pmatrix} , Q = \begin{pmatrix} 0.09 & \cdots & \cdots & \cdots & 0.46 \\ \vdots & \ddots & \ddots & \ddots & \vdots \\ 0.51 & \cdots & \cdots & \cdots & 0.72 \end{pmatrix}" /></a>
 
-We call those two matrixes users and items latent factors. Then, by applying the dot product between them we can reconstruct our huge matrix without empty values but estimated ratings.
+We call these two matrices users and items latent factors. Then, by applying the dot product between both matrices we can reconstruct our rating matrix. The trick is that the empty values will now contain estimated ratings.
 
-In order to get more accurate results, the global rating average and users and items biases are also used to estimate ratings:
+In order to get more accurate results, the global average rating as well as the user and item biases are used in addition:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\bar{r}&space;=&space;\frac{1}{N}&space;\sum_{i=1}^{N}&space;K_{i}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\bar{r}&space;=&space;\frac{1}{N}&space;\sum_{i=1}^{N}&space;K_{i}" title="\bar{r} = \frac{1}{N} \sum_{i=1}^{N} K_{i}" /></a>
 
-Where K stands for known ratings.
+where K stands for known ratings.
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=bu&space;=&space;\begin{pmatrix}&space;0.35&space;&&space;\cdots&space;&&space;0.07&space;\end{pmatrix}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?bu&space;=&space;\begin{pmatrix}&space;0.35&space;&&space;\cdots&space;&&space;0.07&space;\end{pmatrix}" title="bu = \begin{pmatrix} 0.35 & \cdots & 0.07 \end{pmatrix}" /></a>
 
@@ -85,7 +85,7 @@ Then, we can estimate any rating by applying:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=\hat{r}_{u,&space;i}&space;=&space;\bar{r}&space;&plus;&space;bu_{u}&space;&plus;&space;bi_{i}&space;&plus;&space;\sum_{f=1}^{F}&space;P_{u,&space;f}&space;*&space;Q_{i,&space;f}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\hat{r}_{u,&space;i}&space;=&space;\bar{r}&space;&plus;&space;bu_{u}&space;&plus;&space;bi_{i}&space;&plus;&space;\sum_{f=1}^{F}&space;P_{u,&space;f}&space;*&space;Q_{i,&space;f}" title="\hat{r}_{u, i} = \bar{r} + bu_{u} + bi_{i} + \sum_{f=1}^{F} P_{u, f} * Q_{i, f}" /></a>
 
-The learning step consist of performing the SGD procedure that for each known rating updates biases and latent factors this way:
+The learning step consists in performing the SGD algorithm where for each known rating the biases and latent factors are updated as follows:
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=err&space;=&space;r&space;-&space;\hat{r}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?err&space;=&space;r&space;-&space;\hat{r}" title="err = r - \hat{r}" /></a>
 
@@ -97,8 +97,8 @@ The learning step consist of performing the SGD procedure that for each known ra
 
 <a href="https://www.codecogs.com/eqnedit.php?latex=Q_{i,&space;f}&space;=&space;Q_{i,&space;f}&space;&plus;&space;\alpha&space;*&space;(err&space;*&space;P_{u,&space;f}&space;-&space;\lambda&space;*&space;Q_{i,&space;f})" target="_blank"><img src="https://latex.codecogs.com/gif.latex?Q_{i,&space;f}&space;=&space;Q_{i,&space;f}&space;&plus;&space;\alpha&space;*&space;(err&space;*&space;P_{u,&space;f}&space;-&space;\lambda&space;*&space;Q_{i,&space;f})" title="Q_{i, f} = Q_{i, f} + \alpha * (err * P_{u, f} - \lambda * Q_{i, f})" /></a>
 
-Where alpha is the learning rate and lambda the regularization term.
+where alpha is the learning rate and lambda is the regularization term.
 
 ## License
 
-MIT license, [here](LICENSE).
+MIT license, [see here](LICENSE).
