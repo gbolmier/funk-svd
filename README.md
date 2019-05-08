@@ -2,12 +2,12 @@
 
 `funk-svd` is a Python 3 library implementing a fast version of the famous SVD algorithm popularized by Simon Funk [(here)](http://sifter.org/simon/journal/20061211.html) during the [Neflix Prize](http://en.wikipedia.org/wiki/Netflix_Prize) contest.
 
-[`Numba`](http://numba.pydata.org/) is used to speed up our algorithm, enabling us to run over 10 times faster than [`Surprise`](http://surpriselib.com)'s Cython implementation (cf. [benchmark notebook](benchmark.ipynb)).
+[`Numba`](http://numba.pydata.org/) is used to speed up our algorithm, enabling us to run over 10 times faster than [`Surprise`](http://surpriselib.com)'s Cython implementation (cf. [benchmark notebook](http://nbviewer.jupyter.org/github/gbolmier/funk-svd/blob/master/benchmark.ipynb)).
 
-| Movielens 20M | RMSE | MAE  | Time          |
-|---------------|------|------|---------------|
-| Funk-svd      | 0.88 | 0.68 | 48 sec        |
-| Surprise      | 0.88 | 0.68 | 11 min 13 sec |
+| Movielens 20M | RMSE   | MAE    | Time          |
+|:--------------|:------:|:------:|--------------:|
+| Surprise      |  0.88  |  0.68  | 11 min 13 sec |
+| Funk-svd      |  0.88  |  0.68  |        48 sec |
 
 ## Installation
 
