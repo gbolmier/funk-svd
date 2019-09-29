@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 
-from funk_svd.dataset import fetch_ml20m_ratings
+from funk_svd.dataset import fetch_ml_ratings
 from funk_svd import SVD
 
 from sklearn.metrics import mean_absolute_error
 
 
-df = fetch_ml20m_ratings()
+df = fetch_ml_ratings(variant='20m')
 
 train = df.sample(frac=0.8, random_state=7)
 val = df.drop(train.index.tolist()).sample(frac=0.5, random_state=8)

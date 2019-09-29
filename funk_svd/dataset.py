@@ -9,9 +9,15 @@ import pandas as pd
 
 
 __all__ = [
-    'fetch_ml20m_ratings',
+    'fetch_ml_ratings',
 ]
 
+VARIANTS = {
+    '100k': {'filename': 'u.data', 'sep':'\t'},
+    '1m': {'filename': 'ratings.dat', 'sep':r'::'},
+    '10m': {'filename': 'ratings.dat', 'sep':r'::'},
+    '20m': {'filename': 'ratings.csv', 'sep':','}
+}
 
 def get_data_dir_path(data_dir_path=None):
     """Returns the path of the funk-svd data directory.
@@ -43,15 +49,16 @@ def get_data_dir_path(data_dir_path=None):
     return data_dir_path
 
 
-def ml20m_ratings_csv_to_df(csv_path):
+def ml_ratings_csv_to_df(csv_path, variant='20m'):
     names = ['u_id', 'i_id', 'rating', 'timestamp']
     dtype = {'u_id': np.uint32, 'i_id': np.uint32, 'rating': np.float64}
 
     def date_parser(time):
         return datetime.datetime.fromtimestamp(float(time))
 
-    df = pd.read_csv(csv_path, names=names, dtype=dtype, header=0,
-                     parse_dates=['timestamp'], date_parser=date_parser)
+    print ('Reading ratings from ', csv_path)
+    df = pd.read_csv(csv_path, names=names, dtype=dtype, header=0, sep=VARIANTS[variant]['sep'],
+                     parse_dates=['timestamp'], date_parser=date_parser, engine='python')
 
     df.sort_values(by='timestamp', inplace=True)
     df.reset_index(drop=True, inplace=True)
@@ -59,41 +66,45 @@ def ml20m_ratings_csv_to_df(csv_path):
     return df
 
 
-def fetch_ml20m_ratings(data_dir_path=None):
-    """Fetches MovieLens 20M ratings dataset.
+def fetch_ml_ratings(data_dir_path=None, variant='20m'):
+    """Fetches MovieLens ratings dataset.
 
     Args:
         data_dir_path (string, default to `None`): explicit data directory path
             to MovieLens 20M ratings csv.
+        variant (string, default '20m'): movie lens dataset variant 
+            ['100k', '1m', '10m', '20m']
 
     Returns:
         df (pandas DataFrame): containing the dataset.
     """
     if data_dir_path is None:
         data_dir_path = get_data_dir_path(data_dir_path)
-        dirname = 'ml-20m'
-        filename = 'ratings.csv'
+        print ('data_dir_path is ', data_dir_path)
+        dirname = 'ml-' + variant
+        filename = VARIANTS[variant]['filename']
         csv_path = os.path.join(data_dir_path, dirname, filename)
         zip_path = os.path.join(data_dir_path, dirname) + '.zip'
-        url = 'http://files.grouplens.org/datasets/movielens/ml-20m.zip'
+        url = 'http://files.grouplens.org/datasets/movielens/ml-' + variant + '.zip'
     else:
         csv_path = data_dir_path
 
     if os.path.exists(csv_path):
         # Return data loaded into a DataFrame
-        df = ml20m_ratings_csv_to_df(csv_path)
+        df = ml_ratings_csv_to_df(csv_path, variant)
         return df
 
     elif os.path.exists(zip_path):
         # Unzip file before calling back itself
-        print('Unzipping data...')
+        print('Unzipping data from {} to {}...'.format(zip_path, data_dir_path))
 
         with zipfile.ZipFile(zip_path, 'r') as zf:
             zf.extractall(data_dir_path)
 
+        print ('Finished unzipping')
         os.remove(zip_path)
 
-        return fetch_ml20m_ratings()
+        return fetch_ml_ratings(variant=variant)
 
     else:
         # Download the ZIP file before calling back itself
@@ -101,4 +112,8 @@ def fetch_ml20m_ratings(data_dir_path=None):
         with urllib.request.urlopen(url) as r, open(zip_path, 'wb') as f:
             shutil.copyfileobj(r, f)
 
-        return fetch_ml20m_ratings()
+        return fetch_ml_ratings(variant=variant)
+
+if __name__ == '__main__':
+    df = fetch_ml_ratings(variant='100k', data_dir_path=None)
+    print (df.head())
