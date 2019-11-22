@@ -6,8 +6,8 @@
 
 | Movielens 20M | RMSE   | MAE    | Time          |
 |:--------------|:------:|:------:|--------------:|
-| Surprise      |  0.88  |  0.68  | 11 min 13 sec |
-| Funk-svd      |  0.88  |  0.68  |        48 sec |
+| Surprise      |  0.88  |  0.68  | 10 min 40 sec |
+| Funk-svd      |  0.88  |  0.68  |        42 sec |
 
 ## Installation
 
@@ -23,13 +23,13 @@ If you want to install `funk-svd` in a specific conda environment beware of usin
 >>> import pandas as pd
 >>> import numpy as np
 
->>> from funk_svd.dataset import fetch_ml20m_ratings
+>>> from funk_svd.dataset import fetch_ml_ratings
 >>> from funk_svd import SVD
 
 >>> from sklearn.metrics import mean_absolute_error
 
 
->>> df = fetch_ml20m_ratings()
+>>> df = fetch_ml_ratings(variant='100k')
 
 >>> train = df.sample(frac=0.8, random_state=7)
 >>> val = df.drop(train.index.tolist()).sample(frac=0.5, random_state=8)
@@ -47,7 +47,7 @@ Epoch 1/...
 >>> mae = mean_absolute_error(test['rating'], pred)
 
 >>> print('Test MAE: {:.2f}'.format(mae))
-Test MAE: 0.61
+Test MAE: 0.75
 
 ```
 
