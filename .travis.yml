@@ -13,6 +13,6 @@ before_install:
   - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
   - source activate testenv
 install:
-  - conda install --name testenv --yes --file requirements.txt pytest
-  - conda install scikit-learn --yes
+  - pip install -r requirements.txt
+  - conda install --yes pytest scikit-learn
 script: pytest
