@@ -21,4 +21,4 @@ svd.fit(X=train, X_val=val, early_stopping=True, shuffle=False)
 pred = svd.predict(test)
 mae = mean_absolute_error(test["rating"], pred)
 
-print('Test MAE: {mae:.2f}')
+print(f'Test MAE: {mae:.2f}')
