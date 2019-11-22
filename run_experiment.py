@@ -7,7 +7,7 @@ from funk_svd import SVD
 from sklearn.metrics import mean_absolute_error
 
 
-df = fetch_ml_ratings(variant='20m')
+df = fetch_ml_ratings(variant='100k')
 
 train = df.sample(frac=0.8, random_state=7)
 val = df.drop(train.index.tolist()).sample(frac=0.5, random_state=8)
