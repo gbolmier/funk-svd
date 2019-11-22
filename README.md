@@ -46,7 +46,7 @@ Epoch 1/...
 >>> pred = svd.predict(test)
 >>> mae = mean_absolute_error(test['rating'], pred)
 
->>> print('Test MAE: {:.2f}'.format(mae))
+>>> print(f'Test MAE: {mae:.2f}')
 Test MAE: 0.75
 
 ```
