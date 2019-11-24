@@ -1,4 +1,4 @@
-# :zap: funk-svd [![Build Status](https://travis-ci.com/gbolmier/funk-svd.svg?branch=master)](https://travis-ci.com/gbolmier/funk-svd)
+# :zap: funk-svd [![Build Status](https://img.shields.io/travis/gbolmier/funk-svd/master.svg?style=flat)](https://travis-ci.com/gbolmier/funk-svd) [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
 
 `funk-svd` is a Python 3 library implementing a fast version of the famous SVD algorithm popularized by Simon Funk [(here)](http://sifter.org/simon/journal/20061211.html) during the [Neflix Prize](http://en.wikipedia.org/wiki/Netflix_Prize) contest.
 
