@@ -253,3 +253,19 @@ class SVD():
             print('val_mae: {:.2f}'.format(val_mae), end=' - ')
 
         print('took {:.1f} sec'.format(end - start))
+
+    def get_utility_matrix(self, X, fillna = 0):
+        """ Creates an utility matrix based on a [u_id, i_id, rating] dataframe
+        
+        Args:
+            X {pd.DataFrame} -- dataframe with columns u_id, i_id and rating
+            fillna {int} -- value to fill the non-existing ratings
+
+        Returns:
+            pd.DataFrame -- utility matrix with users as index and items as 
+                columns
+        """        
+        
+        return X.pivot(
+            index='u_id', columns='i_id', values='rating'
+        ).fillna(fillna)
