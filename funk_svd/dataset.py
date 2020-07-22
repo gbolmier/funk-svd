@@ -1,11 +1,10 @@
 import datetime
-import os
-import urllib
-import shutil
-import zipfile
-
 import numpy as np
+import os
 import pandas as pd
+import shutil
+import urllib
+import zipfile
 
 
 __all__ = [
@@ -13,11 +12,12 @@ __all__ = [
 ]
 
 VARIANTS = {
-    '100k': {'filename': 'u.data', 'sep':'\t'},
-    '1m': {'filename': 'ratings.dat', 'sep':r'::'},
-    '10m': {'filename': 'ratings.dat', 'sep':r'::'},
-    '20m': {'filename': 'ratings.csv', 'sep':','}
+    '100k': {'filename': 'u.data', 'sep': '\t'},
+    '1m': {'filename': 'ratings.dat', 'sep': r'::'},
+    '10m': {'filename': 'ratings.dat', 'sep': r'::'},
+    '20m': {'filename': 'ratings.csv', 'sep': ','}
 }
+
 
 def get_data_dir_path(data_dir_path=None):
     """Returns the path of the funk-svd data directory.
