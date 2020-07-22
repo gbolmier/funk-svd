@@ -3,7 +3,7 @@ sudo: false
 language: python
 
 python:
-  - 3.7
+  - 3.8
 
 before_install:
   - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -11,8 +11,8 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda update --yes conda
   - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
-  - source activate testenv
+  - conda activate testenv
 install:
-  - pip install -r requirements.txt
+  - python setup.py install
   - conda install --yes pytest scikit-learn
 script: pytest
