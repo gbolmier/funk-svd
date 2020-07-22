@@ -3,7 +3,7 @@ import numpy as np
 import os
 import pandas as pd
 import shutil
-import urllib
+import urllib.request
 import zipfile
 
 
