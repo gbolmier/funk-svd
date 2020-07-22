@@ -11,7 +11,7 @@ before_install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda update --yes conda
   - conda create --yes --name testenv python=$TRAVIS_PYTHON_VERSION
-  - conda activate testenv
+  - source activate testenv
 install:
   - python setup.py install
   - conda install --yes pytest scikit-learn
