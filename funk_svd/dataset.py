@@ -1,6 +1,6 @@
 import datetime
 import os
-import urllib
+import urllib.request
 import shutil
 import zipfile
 
