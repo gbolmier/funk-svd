@@ -1,5 +1,7 @@
-import numpy as np
 import time
+
+import numpy as np
+import pandas as pd
 
 from .fast_methods import _compute_val_metrics
 from .fast_methods import _initialization
@@ -8,7 +10,7 @@ from .fast_methods import _shuffle
 from .utils import timer
 
 
-class SVD():
+class SVD:
     """Implements Simon Funk SVD algorithm engineered during the Netflix Prize.
 
     Attributes:
@@ -36,6 +38,11 @@ class SVD():
         self.n_factors = n_factors
         self.min_rating = min_rating
         self.max_rating = max_rating
+        self.early_stopping = False
+        self.shuffle = False
+        self.global_mean = np.nan
+        self.metrics_ = None
+        self.min_delta_ = 0.001
 
     def _preprocess_data(self, X, train=True):
         """Maps users and items ids to indexes and returns a numpy array.
@@ -54,8 +61,8 @@ class SVD():
             u_ids = X['u_id'].unique().tolist()
             i_ids = X['i_id'].unique().tolist()
 
-            self.user_dict = dict(zip(u_ids, [i for i in range(len(u_ids))]))
-            self.item_dict = dict(zip(i_ids, [i for i in range(len(i_ids))]))
+            self.user_dict = dict(zip(u_ids, list(range(len(u_ids)))))
+            self.item_dict = dict(zip(i_ids, list(range(len(i_ids)))))
 
         X['u_id'] = X['u_id'].map(self.user_dict)
         X['i_id'] = X['i_id'].map(self.item_dict)
@@ -66,9 +73,7 @@ class SVD():
         X['u_id'] = X['u_id'].astype(np.int32)
         X['i_id'] = X['i_id'].astype(np.int32)
 
-        X = X[['u_id', 'i_id', 'rating']].values
-
-        return X
+        return X[['u_id', 'i_id', 'rating']].values
 
     def _sgd(self, X, X_val):
         """Performs SGD algorithm, learns model weights.
@@ -84,9 +89,6 @@ class SVD():
 
         pu, qi, bu, bi = _initialization(n_user, n_item, self.n_factors)
 
-        if self.early_stopping:
-            list_val_rmse = [10]
-
         # Run SGD
         for epoch_ix in range(self.n_epochs):
             start = self._on_epoch_begin(epoch_ix)
@@ -97,18 +99,18 @@ class SVD():
             pu, qi, bu, bi = _run_epoch(X, pu, qi, bu, bi, self.global_mean,
                                         self.n_factors, self.lr, self.reg)
 
-            if self.early_stopping:
-                val_metrics = _compute_val_metrics(X_val, pu, qi, bu, bi,
-                                                   self.global_mean,
-                                                   self.n_factors)
+            if X_val is not None:
+                self.metrics_[epoch_ix, :] = _compute_val_metrics(X_val, pu, qi, bu, bi,
+                                                                  self.global_mean,
+                                                                  self.n_factors)
+                self._on_epoch_end(start,
+                                   self.metrics_[epoch_ix, 0],
+                                   self.metrics_[epoch_ix, 1],
+                                   self.metrics_[epoch_ix, 2])
 
-                val_loss, val_rmse, val_mae = val_metrics
-                list_val_rmse.append(val_rmse)
-
-                self._on_epoch_end(start, val_loss, val_rmse, val_mae)
-
-                if self._early_stopping(list_val_rmse):
-                    break
+                if self.early_stopping:
+                    if self._early_stopping(self.metrics_[:, 1], epoch_ix, self.min_delta_):
+                        break
 
             else:
                 self._on_epoch_end(start)
@@ -119,7 +121,7 @@ class SVD():
         self.bi = bi
 
     @timer(text='\nTraining took ')
-    def fit(self, X, X_val=None, early_stopping=False, shuffle=False):
+    def fit(self, X, X_val=None, early_stopping=False, shuffle=False, min_delta=0.001):
         """Learns model weights.
 
         Args:
@@ -131,16 +133,19 @@ class SVD():
                 a validation monitoring.
             shuffle (boolean): whether or not to shuffle the training set
                 before each epoch.
+            min_delta (float, defaults to .001): minimun delta to arg for an
+                improvement.
 
         Returns:
             self (SVD object): the current fitted object.
         """
         self.early_stopping = early_stopping
         self.shuffle = shuffle
+        self.min_delta_ = min_delta
         print('Preprocessing data...\n')
         X = self._preprocess_data(X)
-
-        if early_stopping:
+        if X_val is not None:
+            self.metrics_ = np.zeros((self.n_epochs, 3), dtype=np.float)
             X_val = self._preprocess_data(X_val, train=False)
 
         self.global_mean = np.mean(X[:, 2])
@@ -173,7 +178,7 @@ class SVD():
             i_ix = self.item_dict[i_id]
             pred += self.bi[i_ix]
 
-        if  user_known and item_known:
+        if user_known and item_known:
             pred += np.dot(self.pu[u_ix], self.qi[i_ix])
 
         if clip:
@@ -201,23 +206,23 @@ class SVD():
 
         return predictions
 
-    def _early_stopping(self, list_val_rmse, min_delta=.001):
+    def _early_stopping(self, list_val_rmse, epoch_idx, min_delta):
         """Returns True if validation rmse is not improving.
 
         Last rmse (plus `min_delta`) is compared with the second to last.
 
         Agrs:
             list_val_rmse (list): ordered validation RMSEs.
-            min_delta (float, defaults to .001): minimun delta to arg for an
-                improvement.
+            min_delta (float): minimun delta to arg for an improvement.
 
         Returns:
             (boolean): whether or not to stop training.
         """
-        if list_val_rmse[-1] + min_delta > list_val_rmse[-2]:
-            return True
-        else:
-            return False
+        if epoch_idx > 0:
+            if list_val_rmse[epoch_idx] + min_delta > list_val_rmse[epoch_idx-1]:
+                self.metrics_ = self.metrics_[:(epoch_idx+1), :]
+                return True
+        return False
 
     def _on_epoch_begin(self, epoch_ix):
         """Displays epoch starting log and returns its starting time.
@@ -247,9 +252,18 @@ class SVD():
         """
         end = time.time()
 
-        if self.early_stopping:
+        if val_loss is not None:
             print('val_loss: {:.2f}'.format(val_loss), end=' - ')
             print('val_rmse: {:.2f}'.format(val_rmse), end=' - ')
             print('val_mae: {:.2f}'.format(val_mae), end=' - ')
 
         print('took {:.1f} sec'.format(end - start))
+
+    def get_val_metrics(self):
+        """Get validation metrics
+
+        Returns:
+            a Pandas DataFrame
+        """
+        if isinstance(self.metrics_, np.ndarray) and (self.metrics_.shape[1] == 3):
+            return pd.DataFrame(self.metrics_, columns=["Loss", "RMSE", "MAE"])
