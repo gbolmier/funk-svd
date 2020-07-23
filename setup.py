@@ -1,8 +1,12 @@
+import os
+
 from setuptools import find_packages
 from setuptools import setup
 
-import funk_svd
 
+about = {}
+with open(os.path.join(os.getcwd(), 'funk_svd/__version__.py')) as f:
+    exec(f.read(), about)
 
 setup(
     author="Geoffrey Bolmier",
@@ -18,7 +22,8 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Topic :: Scientific/Engineering :: Mathematics",
     ],
-    description="A python fast implementation of the famous SVD algorithm popularized by Simon Funk during Netflix Prize",
+    description="A python fast implementation of the famous SVD algorithm "
+                "popularized by Simon Funk during Netflix Prize",
     install_requires=[
         "numba>=0.38.0",
         "numpy>=1.14.3",
@@ -29,5 +34,5 @@ setup(
     packages=find_packages(),
     python_requires=">=3.6.5",
     url="http://github.com/gbolmier/funk-svd",
-    version=funk_svd.__version__,
+    version=about['__version__'],
 )
