@@ -119,4 +119,4 @@ def _compute_val_metrics(X_val, pu, qi, bu, bi, global_mean, n_factors):
     rmse = np.sqrt(loss)
     mae = np.absolute(residuals).mean()
 
-    return (loss, rmse, mae)
+    return loss, rmse, mae
