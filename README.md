@@ -13,6 +13,12 @@
 
 Run `pip install git+https://github.com/gbolmier/funk-svd` in your terminal.
 
+## Contributing
+
+All contributions, bug reports, bug fixes, enhancements, and ideas are welcome.
+
+A detailed overview on how to contribute can be found in the [contributor guide](CONTRIBUTING.md).
+
 ## Quick example
 
 [run_experiment.py](run_experiment.py):
