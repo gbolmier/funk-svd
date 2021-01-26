@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import time
 
 from .fast_methods import _compute_val_metrics
@@ -143,6 +144,10 @@ class SVD:
 
         return X[['u_id', 'i_id', 'rating']].values
 
+    def _init_metrics(self):
+        metrics = np.zeros((self.n_epochs, 3), dtype=np.float)
+        self.metrics_ = pd.DataFrame(metrics, columns=['Loss', 'RMSE', 'MAE'])
+
     def _run_sgd(self, X, X_val):
         """Runs SGD algorithm, learning model weights.
 
@@ -163,15 +168,15 @@ class SVD:
         for epoch_ix in range(self.n_epochs):
             start = self._on_epoch_begin(epoch_ix)
 
-            if self.shuffle_:
+            if self.shuffle:
                 X = _shuffle(X)
 
-            pu, qi, bu, bi = _run_epoch(X, bu, bi, pu, qi, self.global_mean_,
+            bu, bi, pu, qi = _run_epoch(X, bu, bi, pu, qi, self.global_mean_,
                                         self.n_factors, self.lr, self.reg)
 
             if X_val is not None:
                 self.metrics_.loc[epoch_ix, :] = _compute_val_metrics(
-                                                     X_val, pu, qi, bu, bi,
+                                                     X_val, bu, bi, pu, qi,
                                                      self.global_mean_,
                                                      self.n_factors
                                                  )
@@ -180,10 +185,10 @@ class SVD:
                                    self.metrics_.loc[epoch_ix, 'RMSE'],
                                    self.metrics_.loc[epoch_ix, 'MAE'])
 
-                if self.early_stopping_:
+                if self.early_stopping:
                     val_rmse = self.metrics_['RMSE'].tolist()
                     if self._early_stopping(val_rmse, epoch_ix,
-                                            self.min_delta_):
+                                            self.min_delta):
                         break
 
             else:

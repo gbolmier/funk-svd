@@ -26,10 +26,10 @@ def _timer(text=''):
 
     Examples
     --------
-    >>> @timer(text='Greetings took ')
+    >>> @_timer(text='Greetings took ')
     ... def say_hi():
     ...    time.sleep(1)
-    ...    print('Hey! What's up!')
+    ...    print("Hey! What's up!")
     ...
     >>> say_hi()
     Hey! What's up!
