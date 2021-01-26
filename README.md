@@ -1,6 +1,6 @@
 # :zap: funk-svd [![Build Status](https://img.shields.io/travis/gbolmier/funk-svd/master.svg?style=flat)](https://travis-ci.com/gbolmier/funk-svd) [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://opensource.org/licenses/MIT)
 
-`funk-svd` is a Python 3 library implementing a fast version of the famous SVD algorithm popularized by Simon Funk [(here)](http://sifter.org/simon/journal/20061211.html) during the [Neflix Prize](http://en.wikipedia.org/wiki/Netflix_Prize) contest.
+`funk-svd` is a Python 3 library implementing a fast version of the famous SVD algorithm [popularized](http://sifter.org/simon/journal/20061211.html) by Simon Funk during the [Neflix Prize](http://en.wikipedia.org/wiki/Netflix_Prize) contest.
 
 [`Numba`](http://numba.pydata.org/) is used to speed up our algorithm, enabling us to run over 10 times faster than [`Surprise`](http://surpriselib.com)'s Cython implementation (cf. [benchmark notebook](http://nbviewer.jupyter.org/github/gbolmier/funk-svd/blob/master/benchmark.ipynb)).
 
@@ -11,18 +11,13 @@
 
 ## Installation
 
-Run `pip install git+https://github.com/gbolmier/funk-svd` in a terminal.
-
-If you want to install `funk-svd` in a specific conda environment beware of using the [corresponding local `pip`](https://github.com/ContinuumIO/anaconda-issues/issues/1429).
+Run `pip install git+https://github.com/gbolmier/funk-svd` in your terminal.
 
 ## Quick example
 
 [run_experiment.py](run_experiment.py):
 
 ```python
->>> import pandas as pd
->>> import numpy as np
-
 >>> from funk_svd.dataset import fetch_ml_ratings
 >>> from funk_svd import SVD
 
@@ -35,8 +30,8 @@ If you want to install `funk-svd` in a specific conda environment beware of usin
 >>> val = df.drop(train.index.tolist()).sample(frac=0.5, random_state=8)
 >>> test = df.drop(train.index.tolist()).drop(val.index.tolist())
 
->>> svd = SVD(learning_rate=0.001, regularization=0.005, n_epochs=100,
-...           n_factors=15, min_rating=1, max_rating=5)
+>>> svd = SVD(lr=0.001, reg=0.005, n_epochs=100, n_factors=15, min_rating=1,
+...           max_rating=5)
 
 >>> svd.fit(X=train, X_val=val, early_stopping=True, shuffle=False)
 Preprocessing data...

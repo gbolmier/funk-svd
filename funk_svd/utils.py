@@ -3,22 +3,37 @@ import time
 from functools import wraps
 from math import trunc
 
+from .__version__ import __version__
 
-def timer(text=''):
-    """Decorator, prints execution time of the function decorated.
 
-    Args:
-        text (string): text to print before time display.
+__all__ = [
+    'get_version',
+    '_timer'
+]
 
-    Examples:
-        >>> @timer(text="Greetings took ")
-        ... def say_hi():
-        ...    time.sleep(1)
-        ...    print("Hey! What's up!")
-        ...
-        >>> say_hi()
-        Hey! What's up!
-        Greetings took 1 sec
+
+def get_version():
+    return __version__
+
+
+def _timer(text=''):
+    """Decorator, prints execution time of the decorated function.
+
+    Parameters
+    ----------
+    text : str
+        Text to print before time display.
+
+    Examples
+    --------
+    >>> @timer(text='Greetings took ')
+    ... def say_hi():
+    ...    time.sleep(1)
+    ...    print('Hey! What's up!')
+    ...
+    >>> say_hi()
+    Hey! What's up!
+    Greetings took 1 sec
     """
     def decorator(func):
 
@@ -33,7 +48,8 @@ def timer(text=''):
             seconds = round((end - start) % 60)
 
             if hours > 1:
-                print(text + '{} hours {} min and {} sec'.format(hours, minutes,
+                print(text + '{} hours {} min and {} sec'.format(hours,
+                                                                 minutes,
                                                                  seconds))
             elif hours == 1:
                 print(text + '{} hour {} min and {} sec'.format(hours, minutes,

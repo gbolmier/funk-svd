@@ -3,6 +3,14 @@ import numpy as np
 from numba import njit
 
 
+__all__ = [
+    '_compute_val_metrics',
+    '_initialization',
+    '_run_epoch',
+    '_shuffle'
+]
+
+
 @njit
 def _shuffle(X):
     np.random.shuffle(X)
@@ -10,49 +18,73 @@ def _shuffle(X):
 
 
 @njit
-def _initialization(n_user, n_item, n_factors):
-    """Initializes biases and latent factor matrixes.
+def _initialization(n_users, n_items, n_factors):
+    """Initializes biases and latent factor matrices.
 
-    Args:
-        n_user (int): number of different users.
-        n_item (int): number of different items.
-        n_factors (int): number of factors.
+    Parameters
+    ----------
+    n_users : int
+        Number of unique users.
+    n_items : int
+        Number of unique items.
+    n_factors : int
+        Number of factors.
 
-    Returns:
-        pu (numpy array): users latent factor matrix.
-        qi (numpy array): items latent factor matrix.
-        bu (numpy array): users biases vector.
-        bi (numpy array): items biases vector.
+    Returns
+    -------
+    bu : numpy.array
+        User biases vector.
+    bi : numpy.array
+        Item biases vector.
+    pu : numpy.array
+        User latent factors matrix.
+    qi : numpy.array
+        Item latent factors matrix.
     """
-    pu = np.random.normal(0, .1, (n_user, n_factors))
-    qi = np.random.normal(0, .1, (n_item, n_factors))
+    bu = np.zeros(n_users)
+    bi = np.zeros(n_items)
 
-    bu = np.zeros(n_user)
-    bi = np.zeros(n_item)
+    pu = np.random.normal(0, .1, (n_users, n_factors))
+    qi = np.random.normal(0, .1, (n_items, n_factors))
 
-    return pu, qi, bu, bi
+    return bu, bi, pu, qi
 
 
 @njit
-def _run_epoch(X, pu, qi, bu, bi, global_mean, n_factors, lr, reg):
+def _run_epoch(X, bu, bi, pu, qi, global_mean, n_factors, lr, reg):
     """Runs an epoch, updating model weights (pu, qi, bu, bi).
 
-    Args:
-        X (numpy array): training set.
-        pu (numpy array): users latent factor matrix.
-        qi (numpy array): items latent factor matrix.
-        bu (numpy array): users biases vector.
-        bi (numpy array): items biases vector.
-        global_mean (float): ratings arithmetic mean.
-        n_factors (int): number of latent factors.
-        lr (float): learning rate.
-        reg (float): regularization factor.
+    Parameters
+    ----------
+    X : numpy.array
+        Training set.
+    bu : numpy.array
+        User biases vector.
+    bi : numpy.array
+        Item biases vector.
+    pu : numpy.array
+        User latent factors matrix.
+    qi : numpy.array
+        Item latent factors matrix.
+    global_mean : float
+        Ratings arithmetic mean.
+    n_factors : int
+        Number of latent factors.
+    lr : float
+        Learning rate.
+    reg : float
+        L2 regularization factor.
 
     Returns:
-        pu (numpy array): users latent factor matrix updated.
-        qi (numpy array): items latent factor matrix updated.
-        bu (numpy array): users biases vector updated.
-        bi (numpy array): items biases vector updated.
+    --------
+    bu : numpy.array
+        User biases vector.
+    bi : numpy.array
+        Item biases vector.
+    pu : numpy.array
+        User latent factors matrix.
+    qi : numpy.array
+        Item latent factors matrix.
     """
     for i in range(X.shape[0]):
         user, item, rating = int(X[i, 0]), int(X[i, 1]), X[i, 2]
@@ -77,24 +109,34 @@ def _run_epoch(X, pu, qi, bu, bi, global_mean, n_factors, lr, reg):
             pu[user, factor] += lr * (err * qif - reg * puf)
             qi[item, factor] += lr * (err * puf - reg * qif)
 
-    return pu, qi, bu, bi
+    return bu, bi, pu, qi
 
 
 @njit
-def _compute_val_metrics(X_val, pu, qi, bu, bi, global_mean, n_factors):
+def _compute_val_metrics(X_val, bu, bi, pu, qi, global_mean, n_factors):
     """Computes validation metrics (loss, rmse, and mae).
 
-    Args:
-        X_val (numpy array): validation set.
-        pu (numpy array): users latent factor matrix.
-        qi (numpy array): items latent factor matrix.
-        bu (numpy array): users biases vector.
-        bi (numpy array): items biases vector.
-        global_mean (float): ratings arithmetic mean.
-        n_factors (int): number of latent factors.
+    Parameters
+    ----------
+    X_val : numpy.array
+        Validation set.
+    bu : numpy.array
+        User biases vector.
+    bi : numpy.array
+        Item biases vector.
+    pu : numpy.array
+        User latent factors matrix.
+    qi : numpy.array
+        Item latent factors matrix.
+    global_mean : float
+        Ratings arithmetic mean.
+    n_factors : int
+        Number of latent factors.
 
-    Returns:
-        (tuple of floats): validation loss, rmse and mae.
+    Returns
+    -------
+    loss, rmse, mae : tuple of floats
+        Validation loss, rmse and mae.
     """
     residuals = []
 

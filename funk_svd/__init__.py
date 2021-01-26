@@ -1,3 +1,3 @@
 from . import dataset
 from .svd import SVD
-from . import utils
+from .utils import get_version
