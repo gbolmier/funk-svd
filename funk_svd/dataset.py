@@ -66,7 +66,7 @@ def fetch_ml_ratings(data_dir_path=None, variant='20m', verbose=False):
 
         os.remove(zip_path)
 
-        return fetch_ml_ratings(variant=variant)
+        return fetch_ml_ratings(variant=variant, verbose=verbose)
 
     else:
         # Download the ZIP file before calling back itself
@@ -76,7 +76,7 @@ def fetch_ml_ratings(data_dir_path=None, variant='20m', verbose=False):
         with urllib.request.urlopen(url) as r, open(zip_path, 'wb') as f:
             shutil.copyfileobj(r, f)
 
-        return fetch_ml_ratings(variant=variant)
+        return fetch_ml_ratings(variant=variant, verbose=verbose)
 
 
 def _get_data_dir_path(data_dir_path=None):

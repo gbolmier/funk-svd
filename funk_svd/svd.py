@@ -92,7 +92,7 @@ class SVD:
         X = self._preprocess_data(X)
 
         if X_val is not None:
-            X_val = self._preprocess_data(X_val, train=False)
+            X_val = self._preprocess_data(X_val, train=False, verbose=False)
             self._init_metrics()
 
         self.global_mean_ = np.mean(X[:, 2])
@@ -100,7 +100,7 @@ class SVD:
 
         return self
 
-    def _preprocess_data(self, X, train=True):
+    def _preprocess_data(self, X, train=True, verbose=True):
         """Maps user and item ids to their indexes.
 
         Parameters
