@@ -145,7 +145,7 @@ class SVD:
         return X[['u_id', 'i_id', 'rating']].values
 
     def _init_metrics(self):
-        metrics = np.zeros((self.n_epochs, 3), dtype=np.float)
+        metrics = np.zeros((self.n_epochs, 3), dtype=float)
         self.metrics_ = pd.DataFrame(metrics, columns=['Loss', 'RMSE', 'MAE'])
 
     def _run_sgd(self, X, X_val):
