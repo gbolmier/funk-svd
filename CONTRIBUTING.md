@@ -50,17 +50,12 @@ The whole process is also well [documented by GitHub](https://docs.github.com/en
 
 ### c) Install `funk-svd` in development mode
 
-Navigate to the cloned directory and install the required development dependencies properly:
+Navigate to the cloned directory and install the library in editable mode so that changes in the code take effect immediately, and with the required development dependencies (cf. the following [stackoverflow question](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install)):
 
 ```
 $ pip install -e ".[dev]"
 ```
 
-Then install the [development mode](https://stackoverflow.com/questions/19048732/python-setup-py-develop-vs-install) so that changes in the code take effect immediately:
-
-```
-$ python setup.py develop
-```
 
 ## Making changes
 
@@ -153,6 +148,7 @@ def fast_standard_deviation(x: Sequence[Real]) -> float:
     # Return the square root of the previous result
     return np.sqrt(((x - x.mean())**2).mean())
 ```
+
 
 ## Submitting changes
 
