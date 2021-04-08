@@ -98,6 +98,15 @@ The learning step consists in performing the SGD algorithm where for each known 
 
 where alpha is the learning rate and lambda is the regularization term.
 
+## References
+
+- [Collaborative filtering](https://en.wikipedia.org/wiki/Collaborative_filtering)
+- [Matrix completion](https://en.wikipedia.org/wiki/Matrix_completion)
+- [Matrix factorization (recommender systems)](https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems))
+- [Recommender Systems Handbook](https://www.cse.iitk.ac.in/users/nsrivast/HCC/Recommender_systems_handbook.pdf)
+- [Singular value decomposition](https://en.wikipedia.org/wiki/Singular_value_decomposition)
+- [Surprise library for recommender systems](http://surpriselib.com/)
+
 ## License
 
 MIT license, [see here](LICENSE).
