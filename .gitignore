@@ -130,3 +130,6 @@ dmypy.json
 
 # Windows Files
 **/desktop.ini
+
+# VSCode
+.vscode/*
