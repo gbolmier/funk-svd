@@ -41,7 +41,7 @@ setup(
     license='MIT',
     name='funk-svd',
     packages=find_packages(),
-    python_requires='>=3.6.5,<=3.9.1',
+    python_requires='>=3.6.5,<=3.9.10',
     url='http://github.com/gbolmier/funk-svd',
     version=about['__version__'],
 )
